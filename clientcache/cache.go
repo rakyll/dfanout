@@ -33,11 +33,11 @@ func (c *Cache) HTTPClient(fanout string, e *pb.Endpoint) (*http.Client, error) 
 		return client, nil
 	}
 
-	_, err := c.RegisterHTTPClient(fanout, e)
+	client, err := c.RegisterHTTPClient(fanout, e)
 	if err != nil {
 		return nil, err
 	}
-	return c.httpClients[key], nil
+	return client, nil
 }
 
 func (c *Cache) key(fanout string, endpointName string) string {
