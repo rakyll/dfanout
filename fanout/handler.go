@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 	"sync"
 	"time"
 
@@ -113,23 +112,23 @@ func (worker *Worker) do(r *http.Request, fanout string, endpoint *pb.Endpoint) 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	r = r.Clone(ctx)
-	url, _ := url.Parse(httpEndpoint.Url)
-	r.RequestURI = ""
-	r.URL = url
-	r.Method = httpEndpoint.Method
-
-	if len(httpEndpoint.Headers) > 0 {
-		for _, h := range httpEndpoint.Headers {
-			for _, v := range h.Values {
-				r.Header.Add(h.Key, v)
-			}
-		}
+	proxyReq, err := http.NewRequest(httpEndpoint.Method, httpEndpoint.Url, r.Body)
+	if err != nil {
+		log.Printf("Failed to create a request for %q/%q; err = %q", fanout, endpoint.Name, err)
+		return
 	}
+	proxyReq = proxyReq.WithContext(ctx)
 
 	// Set a header to avoid the fanout triggering itself.
 	// Don't remove this header.
-	r.Header.Set(circularRequestDetectionHeader, fanout)
+	proxyReq.Header.Set(circularRequestDetectionHeader, fanout)
+	if len(httpEndpoint.Headers) > 0 {
+		for _, h := range httpEndpoint.Headers {
+			for _, v := range h.Values {
+				proxyReq.Header.Add(h.Key, v)
+			}
+		}
+	}
 
 	client, err := worker.clientCache.HTTPClient(fanout, endpoint)
 	if err != nil {
@@ -137,7 +136,7 @@ func (worker *Worker) do(r *http.Request, fanout string, endpoint *pb.Endpoint) 
 		return
 	}
 
-	resp, err := client.Do(r)
+	resp, err := client.Do(proxyReq)
 	if err != nil {
 		log.Printf("Failed a request to = %q/%q; err = %q", fanout, endpoint.Name, err)
 		return
