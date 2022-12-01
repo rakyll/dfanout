@@ -27,7 +27,7 @@ message Endpoint {
     }
 }
 
-message HTTPHeader {
+message Header {
     string key = 1;
 
     repeated string values = 2;
@@ -40,7 +40,7 @@ message HTTPEndpoint {
 
     int64 timeout_ms = 3;
 
-    repeated HTTPHeader headers = 4;
+    repeated Header headers = 4;
 
     TLSConfig tls_config = 5;
 
