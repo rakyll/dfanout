@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dfanout/dfanout/clientcache"
 	"github.com/dfanout/dfanout/fanout"
+	"github.com/dfanout/dfanout/fanout/clientcache"
 	pb "github.com/dfanout/dfanout/proto"
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v5"

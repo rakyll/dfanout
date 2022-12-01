@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dfanout/dfanout/clientcache"
+	"github.com/dfanout/dfanout/fanout/clientcache"
 	pb "github.com/dfanout/dfanout/proto"
 	"github.com/mailgun/groupcache"
 )
