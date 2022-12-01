@@ -20,8 +20,11 @@ func main() {
 		Primary: true,
 		Endpoint: &pb.Endpoint_HttpEndpoint{
 			HttpEndpoint: &pb.HTTPEndpoint{
-				Url:    "http://localhost:8080/test", // allow url templates
+				Url:    "https://api-server:8080/test", // allow url templates
 				Method: "GET",
+				Tls: &pb.TLS{
+					InsecureSkipVerify: true,
+				},
 			},
 		},
 	}
@@ -29,10 +32,13 @@ func main() {
 		Name: "read_likes_v2",
 		Endpoint: &pb.Endpoint_HttpEndpoint{
 			HttpEndpoint: &pb.HTTPEndpoint{
-				Url:    "http://localhost:8080/test2",
+				Url:    "https://api-server:8080/test2",
 				Method: "GET",
 				Headers: []*pb.HTTPHeader{
 					{Key: "X-Extra", Values: []string{"v2"}},
+				},
+				Tls: &pb.TLS{
+					InsecureSkipVerify: true,
 				},
 				TimeoutMs: 1000,
 			},
