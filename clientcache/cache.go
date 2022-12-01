@@ -33,31 +33,18 @@ func (c *Cache) HTTPClient(fanout string, e *pb.Endpoint) (*http.Client, error) 
 		return client, nil
 	}
 
-	c.Lock()
-	defer c.Unlock()
-
-	client, err := c.makeHTTPClient(fanout, e)
+	_, err := c.RegisterHTTPClient(fanout, e)
 	if err != nil {
 		return nil, err
 	}
-	c.httpClients[key] = client
-	return client, nil
-}
-
-// Invalidate invalidates all of the client caches for the
-// specified fan and endpoint.
-func (c *Cache) Invalidate(fanout string, endpointName string) {
-	c.Lock()
-	defer c.Unlock()
-
-	delete(c.httpClients, c.key(fanout, endpointName))
+	return c.httpClients[key], nil
 }
 
 func (c *Cache) key(fanout string, endpointName string) string {
 	return fanout + ":" + endpointName // TODO: Make ":" a reserved character
 }
 
-func (c *Cache) makeHTTPClient(fanout string, e *pb.Endpoint) (*http.Client, error) {
+func (c *Cache) RegisterHTTPClient(fanout string, e *pb.Endpoint) (*http.Client, error) {
 	httpEndpoint := e.Endpoint.(*pb.Endpoint_HttpEndpoint).HttpEndpoint
 
 	tr := &http.Transport{}
@@ -83,5 +70,12 @@ func (c *Cache) makeHTTPClient(fanout string, e *pb.Endpoint) (*http.Client, err
 		}
 		tr.TLSClientConfig = config
 	}
+
+	c.Lock()
+	defer c.Unlock()
+
+	client := &http.Client{Transport: tr}
+	c.httpClients[c.key(fanout, e.Name)] = client
+
 	return &http.Client{Transport: tr}, nil
 }

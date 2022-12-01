@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dfanout/dfanout/clientcache"
 	pb "github.com/dfanout/dfanout/proto"
 	"github.com/mailgun/groupcache"
 )
@@ -16,7 +17,7 @@ type Cache struct {
 	group *groupcache.Group
 }
 
-func NewFanoutCache(me string, peers []string, adminService pb.AdminService, ttl time.Duration) *Cache {
+func NewFanoutCache(me string, peers []string, ccache *clientcache.Cache, adminService pb.AdminService, ttl time.Duration) *Cache {
 	pool := groupcache.NewHTTPPool("http://" + me)
 	if len(peers) > 0 {
 		pool.Set(peers...)
@@ -35,6 +36,11 @@ func NewFanoutCache(me string, peers []string, adminService pb.AdminService, ttl
 				}
 				if len(resp.Endpoints) == 0 {
 					return errors.New("no endpoints found")
+				}
+				for _, e := range resp.Endpoints {
+					if _, err := ccache.RegisterHTTPClient(key, e); err != nil {
+						return nil
+					}
 				}
 				return dest.SetProto(resp, time.Now().Add(ttl))
 			},

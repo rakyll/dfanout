@@ -47,6 +47,7 @@ func main() {
 	fanoutCache := fanout.NewFanoutCache(
 		listen,
 		strings.Split(peers, ","),
+		ccache,
 		adminService,
 		1*time.Minute,
 	)
