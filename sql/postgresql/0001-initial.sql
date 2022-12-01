@@ -1,5 +1,3 @@
-CREATE DATABASE dfanout;
-
 CREATE TABLE IF NOT EXISTS endpoints (
     fanout_name VARCHAR(1024) NOT NULL,
     endpoint_name VARCHAR(1024) NOT NULL,
