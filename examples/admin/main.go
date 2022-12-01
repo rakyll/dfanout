@@ -22,7 +22,7 @@ func main() {
 			HttpEndpoint: &pb.HTTPEndpoint{
 				Url:    "https://api-server:8080/test", // allow url templates
 				Method: "GET",
-				Tls: &pb.TLS{
+				TlsConfig: &pb.TLSConfig{
 					InsecureSkipVerify: true,
 				},
 			},
@@ -37,7 +37,7 @@ func main() {
 				Headers: []*pb.HTTPHeader{
 					{Key: "X-Extra", Values: []string{"v2"}},
 				},
-				Tls: &pb.TLS{
+				TlsConfig: &pb.TLSConfig{
 					InsecureSkipVerify: true,
 				},
 				TimeoutMs: 1000,

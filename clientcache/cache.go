@@ -45,21 +45,21 @@ func (c *Cache) RegisterHTTPClient(fanout string, e *pb.Endpoint) (*http.Client,
 	httpEndpoint := e.Endpoint.(*pb.Endpoint_HttpEndpoint).HttpEndpoint
 
 	tr := &http.Transport{}
-	if endpointTLS := httpEndpoint.Tls; endpointTLS != nil {
+	if tlsConfig := httpEndpoint.TlsConfig; tlsConfig != nil {
 		config := &tls.Config{}
-		config.ServerName = endpointTLS.ServerName
-		config.InsecureSkipVerify = endpointTLS.InsecureSkipVerify
-		if endpointTLS.CaPem != nil {
+		config.ServerName = tlsConfig.ServerName
+		config.InsecureSkipVerify = tlsConfig.InsecureSkipVerify
+		if tlsConfig.CaPem != nil {
 			roots := x509.NewCertPool()
-			ok := roots.AppendCertsFromPEM(endpointTLS.CaPem)
+			ok := roots.AppendCertsFromPEM(tlsConfig.CaPem)
 			if !ok {
 				return nil, fmt.Errorf("failed to parse root certificate for %q, %q", fanout, e.Name)
 			}
 			config.RootCAs = roots
 			config.ClientAuth = tls.RequireAndVerifyClientCert
 		}
-		if endpointTLS.CaPem != nil && endpointTLS.KeyPem != nil {
-			cert, err := tls.X509KeyPair(endpointTLS.CaPem, endpointTLS.KeyPem)
+		if tlsConfig.CaPem != nil && tlsConfig.KeyPem != nil {
+			cert, err := tls.X509KeyPair(tlsConfig.CaPem, tlsConfig.KeyPem)
 			if err != nil {
 				return nil, fmt.Errorf("failed to load X509 key value pair for %q, %q: %w", fanout, e.Name, err)
 			}

@@ -42,12 +42,12 @@ message HTTPEndpoint {
 
     repeated HTTPHeader headers = 4;
 
-    TLS tls = 5;
+    TLSConfig tls_config = 5;
 
     // TODO: Add retry config.
 }
 
-message TLS {
+message TLSConfig {
     bool insecure_skip_verify = 1;
 
     string server_name = 2;
