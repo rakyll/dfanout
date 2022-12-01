@@ -17,10 +17,9 @@ import (
 )
 
 var (
-	listen             string
-	peers              string
-	postgresConn       string
-	maxEndpointTimeout time.Duration
+	listen       string
+	peers        string
+	postgresConn string
 )
 
 func main() {
@@ -29,7 +28,6 @@ func main() {
 	flag.StringVar(&listen, "listen", ":8080", "")
 	flag.StringVar(&peers, "peers", "", "")
 	flag.StringVar(&postgresConn, "postgres-connection", "postgres://postgres:@localhost:5432/dfanout", "")
-	flag.DurationVar(&maxEndpointTimeout, "max-endpoint-timeout", 10*time.Second, "")
 	flag.Parse()
 
 	if port := os.Getenv("PORT"); port != "" {
@@ -54,9 +52,8 @@ func main() {
 	mux := mux.NewRouter()
 	mux.Handle("/_groupcache/", fanoutCache)
 	mux.Handle("/fanout/{name}", &fanout.Handler{
-		ClientCache:        ccache,
-		FanoutCache:        fanoutCache,
-		MaxEndpointTimeout: maxEndpointTimeout,
+		ClientCache: ccache,
+		FanoutCache: fanoutCache,
 	})
 	mux.PathPrefix(adminServer.PathPrefix()).Handler(adminServer)
 

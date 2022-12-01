@@ -6,9 +6,12 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	pb "github.com/dfanout/dfanout/proto"
 )
+
+const defaultTimeout = 15 * time.Second
 
 type Cache struct {
 	sync.RWMutex
@@ -68,11 +71,19 @@ func (c *Cache) RegisterHTTPClient(fanout string, e *pb.Endpoint) (*http.Client,
 		tr.TLSClientConfig = config
 	}
 
+	timeout := defaultTimeout
+	if tms := httpEndpoint.TimeoutMs; tms > 0 {
+		timeout = time.Duration(tms) * time.Millisecond
+	}
+
 	c.Lock()
 	defer c.Unlock()
 
 	client := &http.Client{Transport: tr}
 	c.httpClients[c.key(fanout, e.Name)] = client
 
-	return &http.Client{Transport: tr}, nil
+	return &http.Client{
+		Transport: tr,
+		Timeout:   timeout,
+	}, nil
 }

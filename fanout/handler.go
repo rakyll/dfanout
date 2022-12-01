@@ -1,7 +1,6 @@
 package fanout
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"log"
@@ -18,8 +17,6 @@ import (
 type Handler struct {
 	ClientCache *clientcache.Cache
 	FanoutCache *Cache
-
-	MaxEndpointTimeout time.Duration
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -54,10 +51,9 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	worker := &Worker{
-		fanout:             fanout,
-		endpoints:          endpoints,
-		clientCache:        h.ClientCache,
-		maxEndpointTimeout: h.MaxEndpointTimeout,
+		fanout:      fanout,
+		endpoints:   endpoints,
+		clientCache: h.ClientCache,
 	}
 	worker.Wait(w, r)
 }
@@ -103,21 +99,11 @@ func (worker *Worker) do(r *http.Request, fanout string, endpoint *pb.Endpoint) 
 	defer log.Printf("Done with a request to = %q/%q", fanout, endpoint.Name)
 
 	httpEndpoint := endpoint.Endpoint.(*pb.Endpoint_HttpEndpoint).HttpEndpoint
-
-	timeout := worker.maxEndpointTimeout
-	if n := httpEndpoint.TimeoutMs; n > 0 {
-		// TODO: Enforce the global max timeout?
-		timeout = time.Duration(n) * time.Millisecond
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
 	proxyReq, err := http.NewRequest(httpEndpoint.Method, httpEndpoint.Url, r.Body)
 	if err != nil {
 		log.Printf("Failed to create a request for %q/%q; err = %q", fanout, endpoint.Name, err)
 		return
 	}
-	proxyReq = proxyReq.WithContext(ctx)
 
 	// Set a header to avoid the fanout triggering itself.
 	// Don't remove this header.
