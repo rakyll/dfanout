@@ -10,9 +10,6 @@ import (
 	pb "github.com/dfanout/dfanout/proto"
 )
 
-// TODO: Turn into an LRU cache.
-// TODO: Invalidate based on endpoint configuration.
-
 type Cache struct {
 	sync.RWMutex
 	httpClients map[string]*http.Client
