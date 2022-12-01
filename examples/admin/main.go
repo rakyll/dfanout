@@ -18,7 +18,7 @@ func main() {
 	oldEndpoint := &pb.Endpoint{
 		Name:    "read_likes_legacy",
 		Primary: true,
-		Endpoint: &pb.Endpoint_HttpEndpoint{
+		Destination: &pb.Endpoint_HttpEndpoint{
 			HttpEndpoint: &pb.HTTPEndpoint{
 				Url:    "https://api-server:8080/test", // allow url templates
 				Method: "GET",
@@ -30,7 +30,7 @@ func main() {
 	}
 	v2Endpoint := &pb.Endpoint{
 		Name: "read_likes_v2",
-		Endpoint: &pb.Endpoint_HttpEndpoint{
+		Destination: &pb.Endpoint_HttpEndpoint{
 			HttpEndpoint: &pb.HTTPEndpoint{
 				Url:    "https://api-server:8080/test2",
 				Method: "GET",

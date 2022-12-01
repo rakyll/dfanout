@@ -45,7 +45,7 @@ func (s *adminService) GetFanout(ctx context.Context, req *pb.GetFanoutRequest) 
 		endpoints = append(endpoints, &pb.Endpoint{
 			Name:    endpointName,
 			Primary: primary,
-			Endpoint: &pb.Endpoint_HttpEndpoint{
+			Destination: &pb.Endpoint_HttpEndpoint{
 				HttpEndpoint: &endpoint,
 			},
 		})
@@ -133,7 +133,7 @@ func (s *adminService) DeleteFanout(ctx context.Context, req *pb.DeleteFanoutReq
 }
 
 func (s *adminService) insertEndpoint(ctx context.Context, tx pgx.Tx, fanout string, e *pb.Endpoint) error {
-	switch endpoint := e.Endpoint.(type) {
+	switch endpoint := e.Destination.(type) {
 	case *pb.Endpoint_HttpEndpoint:
 		// TODO: Validate the endpoint.
 		httpEndpoint, err := protoMarshaler.MarshalToString(endpoint.HttpEndpoint)
@@ -150,7 +150,7 @@ func (s *adminService) insertEndpoint(ctx context.Context, tx pgx.Tx, fanout str
 }
 
 func (s *adminService) updateEndpoint(ctx context.Context, tx pgx.Tx, fanout string, e *pb.Endpoint) error {
-	switch endpoint := e.Endpoint.(type) {
+	switch endpoint := e.Destination.(type) {
 	case *pb.Endpoint_HttpEndpoint:
 		// TODO: Validate the endpoint.
 		httpEndpoint, err := protoMarshaler.MarshalToString(endpoint.HttpEndpoint)

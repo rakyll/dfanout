@@ -98,7 +98,7 @@ func (worker *Worker) do(r *http.Request, fanout string, endpoint *pb.Endpoint) 
 	log.Printf("Making a request to = %q/%q", fanout, endpoint.Name)
 	defer log.Printf("Done with a request to = %q/%q", fanout, endpoint.Name)
 
-	httpEndpoint := endpoint.Endpoint.(*pb.Endpoint_HttpEndpoint).HttpEndpoint
+	httpEndpoint := endpoint.Destination.(*pb.Endpoint_HttpEndpoint).HttpEndpoint
 	proxyReq, err := http.NewRequest(httpEndpoint.Method, httpEndpoint.Url, r.Body)
 	if err != nil {
 		log.Printf("Failed to create a request for %q/%q; err = %q", fanout, endpoint.Name, err)

@@ -45,7 +45,7 @@ func (c *Cache) key(fanout string, endpointName string) string {
 }
 
 func (c *Cache) RegisterHTTPClient(fanout string, e *pb.Endpoint) (*http.Client, error) {
-	httpEndpoint := e.Endpoint.(*pb.Endpoint_HttpEndpoint).HttpEndpoint
+	httpEndpoint := e.Destination.(*pb.Endpoint_HttpEndpoint).HttpEndpoint
 
 	tr := &http.Transport{}
 	if tlsConfig := httpEndpoint.TlsConfig; tlsConfig != nil {

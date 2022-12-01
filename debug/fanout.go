@@ -23,7 +23,7 @@ func NewHandler(fanout string, e []*pb.Endpoint) *Handler {
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var endpoints []endpointData
 	for _, e := range h.endpoints {
-		httpEndpoint := e.Endpoint.(*pb.Endpoint_HttpEndpoint).HttpEndpoint
+		httpEndpoint := e.Destination.(*pb.Endpoint_HttpEndpoint).HttpEndpoint
 		endpoints = append(endpoints, endpointData{
 			Name:    e.Name,
 			Primary: e.Primary,

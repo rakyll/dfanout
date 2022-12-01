@@ -20,7 +20,7 @@ message Endpoint {
 
     // TODO: Fail on failure.
 
-    oneof endpoint {
+    oneof destination {
         HTTPEndpoint http_endpoint = 3;
         // TODO: Support gRPC and Twirp natively in the future.
         // TODO: Support another fanout as an endpoint.
