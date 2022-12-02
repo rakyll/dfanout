@@ -34,7 +34,7 @@ func main() {
 			HttpEndpoint: &pb.HTTPEndpoint{
 				Url:    "https://api-server:8080/test2",
 				Method: "GET",
-				Headers: []*pb.Header{
+				Header: []*pb.Header{
 					{Key: "X-Extra", Values: []string{"v2"}},
 				},
 				TlsConfig: &pb.TLSConfig{

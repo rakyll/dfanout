@@ -118,7 +118,7 @@ func (worker *Worker) do(r *http.Request, fanout string, endpoint *pb.Endpoint) 
 			proxyReq.Header.Add(key, v)
 		}
 	}
-	for _, h := range httpEndpoint.Headers {
+	for _, h := range httpEndpoint.Header {
 		for _, v := range h.Values {
 			proxyReq.Header.Add(h.Key, v)
 		}
