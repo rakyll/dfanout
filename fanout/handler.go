@@ -108,11 +108,14 @@ func (worker *Worker) do(r *http.Request, fanout string, endpoint *pb.Endpoint) 
 	// Set a header to avoid the fanout triggering itself.
 	// Don't remove this header.
 	proxyReq.Header.Set(circularRequestDetectionHeader, fanout)
-	if len(httpEndpoint.Headers) > 0 {
-		for _, h := range httpEndpoint.Headers {
-			for _, v := range h.Values {
-				proxyReq.Header.Add(h.Key, v)
-			}
+	for key, vals := range r.Header {
+		for _, v := range vals {
+			proxyReq.Header.Add(key, v)
+		}
+	}
+	for _, h := range httpEndpoint.Headers {
+		for _, v := range h.Values {
+			proxyReq.Header.Add(h.Key, v)
 		}
 	}
 
